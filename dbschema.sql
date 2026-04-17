@@ -1,7 +1,8 @@
 -- doing this just in case so that we don't run into issues with DB being weird when running script multiple times
 -- DROP DATABASE trojanmarket;
 
-CREATE DATABASE trojanmarket CHARACTER SET uft8mb4 COLLATE utf8mb4_unicode_ci;
+-- original CHARACTER SET and COLLATE stuff was for adding emoji support for chat sessions, not working currently
+CREATE DATABASE trojanmarket CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE trojanmarket;
 
 -- user table setup
