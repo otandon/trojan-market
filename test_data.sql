@@ -1,42 +1,34 @@
 -- test_data.sql
 -- Seed data for trojanmarket schema (MySQL 8.0+)
--- Usage: mysql -u <user> -p < c:/Users/matthewd/Downloads/test_data.sql
+-- Usage: mysql -u <user> -p < PATH-TO-FILE/test_data.sql
 
 USE trojanmarket;
 
 START TRANSACTION;
 
 -- Remove previously seeded data (idempotent reruns).
-DROP TEMPORARY TABLE IF EXISTS tmp_seed_users;
-CREATE TEMPORARY TABLE tmp_seed_users AS
-SELECT userID
-FROM Users
-WHERE username LIKE 'seed_%';
-
 DELETE FROM Transactions
-WHERE buyerID IN (SELECT userID FROM tmp_seed_users)
-   OR sellerID IN (SELECT userID FROM tmp_seed_users);
+WHERE buyerID IN (SELECT userID FROM Users WHERE username LIKE 'seed_%')
+    OR sellerID IN (SELECT userID FROM Users WHERE username LIKE 'seed_%');
 
 DELETE FROM Messages
-WHERE senderID IN (SELECT userID FROM tmp_seed_users)
+WHERE senderID IN (SELECT userID FROM Users WHERE username LIKE 'seed_%')
    OR sessionID IN (
        SELECT sessionID
        FROM ChatSessions
-       WHERE buyerID IN (SELECT userID FROM tmp_seed_users)
-          OR sellerID IN (SELECT userID FROM tmp_seed_users)
+         WHERE buyerID IN (SELECT userID FROM Users WHERE username LIKE 'seed_%')
+             OR sellerID IN (SELECT userID FROM Users WHERE username LIKE 'seed_%')
    );
 
 DELETE FROM ChatSessions
-WHERE buyerID IN (SELECT userID FROM tmp_seed_users)
-   OR sellerID IN (SELECT userID FROM tmp_seed_users);
+WHERE buyerID IN (SELECT userID FROM Users WHERE username LIKE 'seed_%')
+    OR sellerID IN (SELECT userID FROM Users WHERE username LIKE 'seed_%');
 
 DELETE FROM Postings
-WHERE sellerID IN (SELECT userID FROM tmp_seed_users);
+WHERE sellerID IN (SELECT userID FROM Users WHERE username LIKE 'seed_%');
 
 DELETE FROM Users
-WHERE userID IN (SELECT userID FROM tmp_seed_users);
-
-DROP TEMPORARY TABLE tmp_seed_users;
+WHERE username LIKE 'seed_%';
 
 -- Seed users.
 INSERT INTO Users (username, password, email, isVerified, review, is_active)

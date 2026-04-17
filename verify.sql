@@ -1,6 +1,6 @@
 -- verify.sql
 -- Post-deployment verification for dbschema.sql
--- Usage: mysql -u <user> -p < c:/Users/matthewd/Downloads/verify.sql
+-- Usage: mysql -u <user> -p < PATH-TO-FILE/verify.sql
 
 SET @db_name := 'trojanmarket';
 
@@ -112,22 +112,22 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS verify_smoke_test //
 CREATE PROCEDURE verify_smoke_test()
 BEGIN
-    DECLARE v_suffix VARCHAR(64);
-    DECLARE v_seller_username VARCHAR(64);
-    DECLARE v_buyer_username VARCHAR(64);
-    DECLARE v_seller_email VARCHAR(128);
-    DECLARE v_buyer_email VARCHAR(128);
+    DECLARE v_suffix VARCHAR(6);
+    DECLARE v_seller_username VARCHAR(25);
+    DECLARE v_buyer_username VARCHAR(25);
+    DECLARE v_seller_email VARCHAR(50);
+    DECLARE v_buyer_email VARCHAR(50);
 
     IF @can_smoke_test = 0 THEN
         SELECT 'SMOKE_TEST_READY' AS check_name,
                'SKIP' AS result,
                'Missing required tables; smoke test not run' AS details;
     ELSE
-        SET v_suffix = CONCAT(UNIX_TIMESTAMP(), FLOOR(RAND() * 1000000));
-        SET v_seller_username = CONCAT('verify_seller_', v_suffix);
-        SET v_buyer_username = CONCAT('verify_buyer_', v_suffix);
-        SET v_seller_email = CONCAT('verify_seller_', v_suffix, '@example.com');
-        SET v_buyer_email = CONCAT('verify_buyer_', v_suffix, '@example.com');
+        SET v_suffix = LPAD(FLOOR(RAND() * 1000000), 6, '0');
+        SET v_seller_username = CONCAT('vs_', v_suffix);
+        SET v_buyer_username = CONCAT('vb_', v_suffix);
+        SET v_seller_email = CONCAT('vs_', v_suffix, '@ex.com');
+        SET v_buyer_email = CONCAT('vb_', v_suffix, '@ex.com');
 
         START TRANSACTION;
 
